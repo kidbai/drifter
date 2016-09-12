@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <div class="content"></div>
+    <button class="pick">pick</button>
+    <div class="info"></div>
+
+
+    <button class="throwback">throw</button>
+
+    <hr>
+    <button class="show">show bottle</button>
+    <div class="bottleContent"></div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    $(function () {
+        $(".pick").on('click', function() {
+            $.ajax({
+                url: '/pick',
+                type: 'get',
+                dataType: 'json',
+                data: {
+                    user: 'youngbye',
+                    type: 'male'
+                }
+            })
+            .done(function(data) {
+                console.log(JSON.stringify(data.msg));
+                if(data.code != 1){
+                    $(".content").text(data.msg);
+                }else {
+                    $(".content").text(JSON.stringify(data.msg));
+                    $(".content").html('<button class="throwback">throw back</button>')
+                }
+                console.log("success");
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+        });
+
+        $("html").on("click", ".throwback", function(){
+            $.ajax({
+                url: '/throw',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    owner: 'bottle' + Math.random() * 10,
+                    type: 'male',
+                    content: 'content' + Math.random() * 10
+                }
+            })
+            .done(function(data) {
+                console.log(JSON.stringify(data.msg));
+                if(data.code === 1){
+                    $('.info').text('success');
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+        });
+
+        $("html").on('click', '.show', function(event) {
+            event.preventDefault();
+            /* Act on the event */
+            $.ajax({
+                url: '/show',
+                type: 'GET',
+                dataType: 'json',
+                data: {user: 'youngbye'}
+            })
+            .done(function(data) {
+                console.log(data);
+                $(".bottleContent").empty();
+                if(data.code === 1){
+                    $.each(data.msg, function(index, el) {
+                        $(".bottleContent").append((el.message[0][0]) + '<br>');
+                    });
+                }
+                console.log("success");
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+
+        });
+    });
+</script>
+</html>
